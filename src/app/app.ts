@@ -1,12 +1,15 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  imports: [ButtonModule],
+  template: `
+    <div style="padding: 2rem">
+      <h1>Mirante Tecnologia</h1>
+
+      <p-button label="PrimeNG funcionando" icon="pi pi-check" />
+    </div>
+  `,
 })
-export class App {
-  protected readonly title = signal('mirante-desafio');
-}
+export class App {}
