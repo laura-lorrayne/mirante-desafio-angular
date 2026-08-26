@@ -1,3 +1,7 @@
+<p-toast position="top-right" [life]="3000" />
+
+<p-confirmDialog />
+
 <p-dialog
   header="Incluir Lançamento"
   [visible]="visible()"
@@ -143,7 +147,6 @@
       <div class="section-title">Documento CSC</div>
 
       <div class="csc-grid">
-        <!-- PA -->
         <div class="field">
           <label for="pa"> PA </label>
 
@@ -161,7 +164,7 @@
     </section>
   </form>
 
-  <!-- BOTÃO DE SALVAR -->
+  <!-- SALVAR -->
   <div class="form-submit">
     @if (modoFormulario() === 'novo') {
       <p-button label="Salvar lançamento" icon="pi pi-check" (onClick)="salvar()" />
@@ -179,13 +182,12 @@
     @if (modoFormulario() === 'visualizacao') {
       <span class="view-mode-message">
         <i class="pi pi-eye"></i>
-
         Modo de visualização
       </span>
     }
   </div>
 
-  <!-- BARRA DE AÇÕES DOS LANÇAMENTOS -->
+  <!-- AÇÕES DOS LANÇAMENTOS -->
   <div class="lancamento-actions">
     <p-button
       label="Visualizar"
@@ -238,26 +240,18 @@
         'min-width': '800px',
       }"
     >
-      <!-- CABEÇALHO -->
       <ng-template #header>
         <tr>
           <th>ID</th>
-
           <th>Conta Corrente</th>
-
           <th>Titular</th>
-
           <th>Valor</th>
-
           <th>Histórico</th>
-
           <th>Documento</th>
-
           <th>Situação</th>
         </tr>
       </ng-template>
 
-      <!-- CORPO -->
       <ng-template #body let-lancamento>
         <tr [pSelectableRow]="lancamento" class="selectable-row">
           <td>
@@ -292,12 +286,10 @@
         </tr>
       </ng-template>
 
-      <!-- SEM REGISTROS -->
       <ng-template #emptymessage>
         <tr>
           <td colspan="7" class="empty-message">
             <i class="pi pi-info-circle"></i>
-
             Nenhum lançamento incluído.
           </td>
         </tr>
@@ -305,7 +297,7 @@
     </p-table>
   </div>
 
-  <!-- RODAPÉ DO MODAL -->
+  <!-- RODAPÉ -->
   <ng-template #footer>
     <p-button
       label="Fechar"

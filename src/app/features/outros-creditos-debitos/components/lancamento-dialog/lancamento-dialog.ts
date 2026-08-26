@@ -8,14 +8,18 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { finalize } from 'rxjs';
 
+import { ConfirmationService, MessageService } from 'primeng/api';
+
 import { ButtonModule } from 'primeng/button';
 import { CheckboxModule } from 'primeng/checkbox';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DialogModule } from 'primeng/dialog';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { TableModule } from 'primeng/table';
 import { TextareaModule } from 'primeng/textarea';
+import { ToastModule } from 'primeng/toast';
 
 import { Lancamento } from '../../../../core/models/lancamento.model';
 import { ContaCorrenteService } from '../../../../core/services/conta-corrente';
@@ -34,13 +38,16 @@ type ModoFormulario = 'novo' | 'edicao' | 'visualizacao';
     CurrencyPipe,
     ButtonModule,
     CheckboxModule,
+    ConfirmDialogModule,
     DialogModule,
     InputNumberModule,
     InputTextModule,
     SelectModule,
     TableModule,
     TextareaModule,
+    ToastModule,
   ],
+  providers: [MessageService, ConfirmationService],
   templateUrl: './lancamento-dialog.html',
   styleUrl: './lancamento-dialog.scss',
 })
@@ -50,6 +57,10 @@ export class LancamentoDialog {
   private readonly contaCorrenteService = inject(ContaCorrenteService);
 
   private readonly destroyRef = inject(DestroyRef);
+
+  private readonly messageService = inject(MessageService);
+
+  private readonly confirmationService = inject(ConfirmationService);
 
   readonly visible = input(false);
   readonly visibleChange = output<boolean>();
@@ -137,7 +148,6 @@ export class LancamentoDialog {
 
   onContaAlterada(): void {
     this.form.controls.titular.setValue('');
-
     this.contaNaoEncontrada.set(false);
   }
 
@@ -146,6 +156,12 @@ export class LancamentoDialog {
 
     if (!numero) {
       this.form.controls.contaCorrente.markAsTouched();
+
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Atenção',
+        detail: 'Informe a conta corrente.',
+      });
 
       return;
     }
@@ -169,14 +185,32 @@ export class LancamentoDialog {
           if (!conta) {
             this.contaNaoEncontrada.set(true);
 
+            this.messageService.add({
+              severity: 'warn',
+              summary: 'Conta não encontrada',
+              detail: 'Não foi localizada uma conta corrente com o número informado.',
+            });
+
             return;
           }
 
           this.form.controls.titular.setValue(conta.titular);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Conta localizada',
+            detail: conta.titular,
+          });
         },
 
         error: () => {
           this.contaNaoEncontrada.set(true);
+
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: 'Não foi possível consultar a conta corrente.',
+          });
         },
       });
   }
@@ -234,11 +268,28 @@ export class LancamentoDialog {
       return;
     }
 
-    this.lancamentos.update((lancamentos) =>
-      lancamentos.filter((item) => item.id !== lancamento.id),
-    );
+    this.confirmationService.confirm({
+      header: 'Excluir lançamento',
+      message: `Deseja realmente excluir o lançamento ${lancamento.id}?`,
+      icon: 'pi pi-exclamation-triangle',
 
-    this.prepararInclusao();
+      acceptLabel: 'Excluir',
+      rejectLabel: 'Cancelar',
+
+      accept: () => {
+        this.lancamentos.update((lancamentos) =>
+          lancamentos.filter((item) => item.id !== lancamento.id),
+        );
+
+        this.prepararInclusao();
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Lançamento excluído',
+          detail: 'O lançamento foi excluído com sucesso.',
+        });
+      },
+    });
   }
 
   duplicarLancamento(): void {
@@ -256,21 +307,31 @@ export class LancamentoDialog {
 
     this.form.reset({
       contaCorrente: lancamento.contaCorrente,
+
       titular: lancamento.titular,
+
       valor: lancamento.valor,
+
       historico: lancamento.historico,
+
       estorno: lancamento.estorno,
 
-      // Documento fica vazio para evitar
-      // duplicação acidental do identificador.
       documento: '',
 
       descricao: lancamento.descricao ?? '',
+
       situacao: 'Pendente',
+
       pa: lancamento.pa,
     });
 
     this.contaNaoEncontrada.set(false);
+
+    this.messageService.add({
+      severity: 'info',
+      summary: 'Lançamento duplicado',
+      detail: 'Revise os dados e informe um novo documento antes de salvar.',
+    });
   }
 
   salvar(): void {
@@ -281,6 +342,12 @@ export class LancamentoDialog {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
 
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Formulário inválido',
+        detail: 'Revise os campos obrigatórios antes de continuar.',
+      });
+
       return;
     }
 
@@ -288,6 +355,12 @@ export class LancamentoDialog {
 
     if (!titular) {
       this.contaNaoEncontrada.set(true);
+
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Conta corrente',
+        detail: 'Localize uma conta corrente válida antes de salvar.',
+      });
 
       return;
     }
@@ -307,6 +380,12 @@ export class LancamentoDialog {
     this.lancamentos.update((lancamentos) => [...lancamentos, lancamento]);
 
     this.prepararInclusao();
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Lançamento incluído',
+      detail: 'O lançamento foi incluído com sucesso.',
+    });
   }
 
   private salvarAlteracao(): void {
@@ -330,6 +409,12 @@ export class LancamentoDialog {
 
     this.form.disable({
       emitEvent: false,
+    });
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Lançamento alterado',
+      detail: 'As alterações foram salvas com sucesso.',
     });
   }
 
@@ -362,13 +447,21 @@ export class LancamentoDialog {
   private preencherFormulario(lancamento: Lancamento): void {
     this.form.reset({
       contaCorrente: lancamento.contaCorrente,
+
       titular: lancamento.titular,
+
       valor: lancamento.valor,
+
       historico: lancamento.historico,
+
       estorno: lancamento.estorno,
+
       documento: lancamento.documento,
+
       descricao: lancamento.descricao ?? '',
+
       situacao: lancamento.situacao,
+
       pa: lancamento.pa,
     });
 
