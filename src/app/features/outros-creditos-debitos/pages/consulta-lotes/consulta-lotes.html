@@ -1,3 +1,7 @@
+<p-toast position="top-right" [life]="3000" />
+
+<p-confirmDialog />
+
 <div class="page-container">
   <header class="page-header">
     <div>
@@ -101,13 +105,17 @@
         </div>
       </div>
 
+      <!-- TABELA -->
       <app-lote-table
         [lotes]="lotes()"
+        [selecionados]="lotesSelecionados()"
         [loading]="loading()"
         (selecaoAlterada)="onSelecaoAlterada($event)"
       />
     }
   </main>
+
+  <!-- MODAL DE LANÇAMENTO -->
   <app-lancamento-dialog
     [visible]="modalLancamentoVisivel()"
     (visibleChange)="modalLancamentoVisivel.set($event)"

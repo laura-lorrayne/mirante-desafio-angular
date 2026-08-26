@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, delay, of } from 'rxjs';
 
-import { Lote } from '../models/lote.model';
+import { Lote, SituacaoLote } from '../models/lote.model';
+
 import { LoteFiltro } from '../models/lote-filtro.model';
 import { LOTES_MOCK } from '../mocks/lotes.mock';
 
@@ -9,12 +10,38 @@ import { LOTES_MOCK } from '../mocks/lotes.mock';
   providedIn: 'root',
 })
 export class LoteService {
-  private readonly lotes: Lote[] = [...LOTES_MOCK];
+  private lotes: Lote[] = [...LOTES_MOCK];
 
   pesquisar(filtro: LoteFiltro): Observable<Lote[]> {
     const resultado = this.lotes.filter((lote) => this.atendeFiltros(lote, filtro));
 
-    return of(resultado).pipe(delay(200));
+    return of(resultado).pipe(delay(100));
+  }
+
+  atualizarSituacao(ids: number[], situacao: SituacaoLote): Observable<Lote[]> {
+    const agora = new Date();
+
+    this.lotes = this.lotes.map((lote) =>
+      ids.includes(lote.id)
+        ? {
+            ...lote,
+            situacao,
+            dataHoraSituacao: agora,
+            usuarioAprovacao:
+              situacao === SituacaoLote.CONFIRMADO ? 'usuario.aprovador' : lote.usuarioAprovacao,
+          }
+        : lote,
+    );
+
+    const atualizados = this.lotes.filter((lote) => ids.includes(lote.id));
+
+    return of(atualizados).pipe(delay(100));
+  }
+
+  excluir(id: number): Observable<void> {
+    this.lotes = this.lotes.filter((lote) => lote.id !== id);
+
+    return of(undefined).pipe(delay(100));
   }
 
   private atendeFiltros(lote: Lote, filtro: LoteFiltro): boolean {
@@ -66,6 +93,7 @@ export class LoteService {
 
   private inicioDoDia(data: Date): Date {
     const inicio = new Date(data);
+
     inicio.setHours(0, 0, 0, 0);
 
     return inicio;
@@ -73,6 +101,7 @@ export class LoteService {
 
   private fimDoDia(data: Date): Date {
     const fim = new Date(data);
+
     fim.setHours(23, 59, 59, 999);
 
     return fim;
