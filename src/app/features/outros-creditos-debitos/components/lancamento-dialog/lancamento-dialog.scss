@@ -1,0 +1,395 @@
+.lancamento-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-section {
+  overflow: hidden;
+
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+
+  background: var(--app-surface);
+}
+
+.section-title {
+  padding: 0.65rem 0.9rem;
+
+  background: var(--app-primary-dark);
+  color: #ffffff;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* FORMULÁRIO PRINCIPAL */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 1rem;
+
+  padding: 1rem;
+}
+
+.csc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 1rem;
+
+  padding: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.4rem;
+
+  width: 100%;
+  min-width: 0;
+
+  label {
+    font-size: 0.82rem;
+    font-weight: 500;
+
+    color: var(--app-text);
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Conta corrente ocupa uma coluna */
+.conta-field {
+  grid-column: span 1;
+}
+
+/* Titular ocupa duas */
+.titular-field {
+  grid-column: span 2;
+}
+
+/* Descrição ocupa duas */
+.descricao-field {
+  grid-column: span 2;
+}
+
+/* BUSCA DA CONTA */
+
+.search-field {
+  display: flex;
+  align-items: stretch;
+
+  gap: 0.4rem;
+
+  width: 100%;
+
+  input {
+    flex: 1;
+
+    min-width: 0;
+  }
+}
+
+/* CHECKBOX */
+
+.checkbox-field {
+  justify-content: flex-end;
+}
+
+.checkbox-content {
+  display: flex;
+  align-items: center;
+
+  min-height: 42px;
+
+  gap: 0.5rem;
+}
+
+.checkbox-label {
+  cursor: pointer;
+
+  margin: 0;
+
+  font-weight: 400 !important;
+}
+
+/* ERROS */
+
+.error-message {
+  color: #c62828;
+
+  font-size: 0.78rem;
+}
+
+/* SALVAR */
+
+.form-submit {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  min-height: 44px;
+
+  margin-top: 1rem;
+}
+
+.view-mode-message {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.5rem;
+
+  padding: 0.55rem 0.8rem;
+
+  border: 1px solid #b7d6d2;
+  border-radius: 6px;
+
+  background: #eef5f4;
+
+  color: var(--app-primary-dark);
+
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* BARRA DE AÇÕES */
+
+.lancamento-actions {
+  display: flex;
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 0.5rem;
+
+  margin: 1rem 0;
+
+  padding: 0.75rem;
+
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+
+  background: #f8faf9;
+}
+
+/* TABELA */
+
+.lancamentos-table {
+  width: 100%;
+
+  overflow-x: auto;
+
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+
+  background: var(--app-surface);
+}
+
+.selectable-row {
+  cursor: pointer;
+}
+
+.empty-message {
+  padding: 2rem !important;
+
+  text-align: center !important;
+
+  color: var(--app-text-secondary);
+
+  i {
+    margin-right: 0.4rem;
+  }
+}
+
+/* STATUS */
+
+.status-pendente {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 5.5rem;
+
+  padding: 0.25rem 0.6rem;
+
+  border-radius: 999px;
+
+  background: #fff3cd;
+  color: #856404;
+
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* PRIMENG */
+
+:host ::ng-deep {
+  .p-dialog {
+    max-height: 94vh;
+  }
+
+  .p-dialog-content {
+    overflow-y: auto;
+  }
+
+  .p-select,
+  .p-inputnumber {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .p-inputnumber-input {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .p-select-label {
+    min-width: 0;
+  }
+
+  .p-inputtext:disabled,
+  .p-disabled {
+    opacity: 0.8;
+  }
+
+  /* Tabela */
+
+  .lancamentos-table {
+    .p-datatable-table {
+      width: 100%;
+      table-layout: fixed;
+    }
+
+    .p-datatable-thead > tr > th {
+      padding: 0.65rem 0.5rem;
+
+      background: var(--app-primary-dark);
+      color: #ffffff;
+
+      text-align: center;
+
+      font-size: 0.78rem;
+      font-weight: 600;
+
+      white-space: nowrap;
+    }
+
+    .p-datatable-tbody > tr > td {
+      padding: 0.65rem 0.5rem;
+
+      text-align: center;
+
+      font-size: 0.78rem;
+
+      white-space: nowrap;
+
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .p-datatable-tbody > tr:hover {
+      background: #f3f7f7;
+    }
+
+    .p-datatable-tbody > tr.p-highlight {
+      background: #dfeeed;
+      color: var(--app-text);
+    }
+
+    /* ID */
+    .p-datatable-thead > tr > th:nth-child(1),
+    .p-datatable-tbody > tr > td:nth-child(1) {
+      width: 4rem;
+    }
+
+    /* Conta */
+    .p-datatable-thead > tr > th:nth-child(2),
+    .p-datatable-tbody > tr > td:nth-child(2) {
+      width: 8rem;
+    }
+
+    /* Titular */
+    .p-datatable-thead > tr > th:nth-child(3),
+    .p-datatable-tbody > tr > td:nth-child(3) {
+      width: 11rem;
+    }
+
+    /* Valor */
+    .p-datatable-thead > tr > th:nth-child(4),
+    .p-datatable-tbody > tr > td:nth-child(4) {
+      width: 8rem;
+    }
+
+    /* Histórico */
+    .p-datatable-thead > tr > th:nth-child(5),
+    .p-datatable-tbody > tr > td:nth-child(5) {
+      width: 11rem;
+    }
+
+    /* Documento */
+    .p-datatable-thead > tr > th:nth-child(6),
+    .p-datatable-tbody > tr > td:nth-child(6) {
+      width: 8rem;
+    }
+
+    /* Situação */
+    .p-datatable-thead > tr > th:nth-child(7),
+    .p-datatable-tbody > tr > td:nth-child(7) {
+      width: 8rem;
+    }
+  }
+}
+
+/* TABLET */
+
+@media (max-width: 850px) {
+  .form-grid,
+  .csc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .titular-field,
+  .descricao-field {
+    grid-column: span 1;
+  }
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .form-grid,
+  .csc-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .conta-field,
+  .titular-field,
+  .descricao-field {
+    grid-column: span 1;
+  }
+
+  .lancamento-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .form-submit {
+    justify-content: stretch;
+  }
+
+  :host ::ng-deep {
+    .lancamento-actions .p-button,
+    .form-submit .p-button {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}

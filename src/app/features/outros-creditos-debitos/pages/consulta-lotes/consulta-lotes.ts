@@ -1,8 +1,10 @@
-import { afterNextRender, Component, DestroyRef, inject, Injector, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 
 import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { ButtonModule } from 'primeng/button';
 import { MenuItem } from 'primeng/api';
 
 import { Lote } from '../../../../core/models/lote.model';
@@ -11,18 +13,17 @@ import { LoteService } from '../../../../core/services/lote';
 
 import { LoteFiltros } from '../../components/lote-filtros/lote-filtros';
 import { LoteTable } from '../../components/lote-table/lote-table';
-import { finalize } from 'rxjs';
+import { LancamentoDialog } from '../../components/lancamento-dialog/lancamento-dialog';
 
 @Component({
   selector: 'app-consulta-lotes',
-  imports: [BreadcrumbModule, LoteFiltros, LoteTable],
+  imports: [BreadcrumbModule, ButtonModule, LoteFiltros, LoteTable, LancamentoDialog],
   templateUrl: './consulta-lotes.html',
   styleUrl: './consulta-lotes.scss',
 })
 export class ConsultaLotes {
   private readonly loteService = inject(LoteService);
   private readonly destroyRef = inject(DestroyRef);
-  private readonly injector = inject(Injector);
 
   readonly lotes = signal<Lote[]>([]);
   readonly lotesSelecionados = signal<Lote[]>([]);
@@ -30,6 +31,11 @@ export class ConsultaLotes {
   readonly loading = signal(false);
   readonly erro = signal<string | null>(null);
   readonly pesquisou = signal(false);
+  readonly modalLancamentoVisivel = signal(false);
+
+  readonly possuiSelecionados = computed(() => this.lotesSelecionados().length > 0);
+
+  readonly possuiUmSelecionado = computed(() => this.lotesSelecionados().length === 1);
 
   readonly breadcrumbItems: MenuItem[] = [
     {
@@ -58,8 +64,10 @@ export class ConsultaLotes {
         next: (lotes) => {
           this.lotes.set(lotes);
         },
+
         error: () => {
           this.lotes.set([]);
+
           this.erro.set('Não foi possível realizar a pesquisa. Tente novamente.');
         },
       });
@@ -69,16 +77,36 @@ export class ConsultaLotes {
     this.lotesSelecionados.set(lotes);
   }
 
-  private finalizarLoadingAposRenderizacao(): void {
-    afterNextRender(
-      {
-        read: () => {
-          this.loading.set(false);
-        },
-      },
-      {
-        injector: this.injector,
-      },
-    );
+  onConfirmar(): void {
+    console.log('Confirmar lotes:', this.lotesSelecionados());
+  }
+
+  onEnviar(): void {
+    console.log('Enviar lotes:', this.lotesSelecionados());
+  }
+
+  onVisualizarJustificativa(): void {
+    console.log('Visualizar justificativa:', this.lotesSelecionados());
+  }
+
+  onIncluir(): void {
+    this.modalLancamentoVisivel.set(true);
+  }
+  onAlterar(): void {
+    const lote = this.lotesSelecionados()[0];
+
+    console.log('Alterar lote:', lote);
+  }
+
+  onExcluir(): void {
+    const lote = this.lotesSelecionados()[0];
+
+    console.log('Excluir lote:', lote);
+  }
+
+  onVisualizar(): void {
+    const lote = this.lotesSelecionados()[0];
+
+    console.log('Visualizar lote:', lote);
   }
 }

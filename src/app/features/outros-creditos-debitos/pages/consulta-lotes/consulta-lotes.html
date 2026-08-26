@@ -22,32 +22,94 @@
 
     @if (!erro() && pesquisou()) {
       <div class="result-summary">
-        @if (loading()) {
-          <span class="loading-text">
-            <i class="pi pi-spin pi-spinner"></i>
+        <span>
+          {{ lotes().length }}
+          lote(s) encontrado(s).
+        </span>
 
-            Pesquisando lotes...
+        @if (lotesSelecionados().length > 0) {
+          <span class="selection-summary">
+            {{ lotesSelecionados().length }}
+            selecionado(s).
           </span>
-        } @else {
-          <span>
-            {{ lotes().length }}
-            lote(s) encontrado(s).
-          </span>
-
-          @if (lotesSelecionados().length > 0) {
-            <span>
-              {{ lotesSelecionados().length }}
-              selecionado(s).
-            </span>
-          }
         }
+      </div>
+
+      <!-- BARRA DE AÇÕES -->
+      <div class="action-bar" aria-label="Ações dos lotes">
+        <div class="action-group">
+          <p-button
+            label="Confirmar"
+            icon="pi pi-check"
+            severity="success"
+            [disabled]="!possuiSelecionados() || loading()"
+            (onClick)="onConfirmar()"
+          />
+
+          <p-button
+            label="Enviar"
+            icon="pi pi-send"
+            severity="info"
+            [disabled]="!possuiSelecionados() || loading()"
+            (onClick)="onEnviar()"
+          />
+
+          <p-button
+            label="Visualizar Justificativa"
+            icon="pi pi-comment"
+            severity="secondary"
+            [outlined]="true"
+            [disabled]="!possuiSelecionados() || loading()"
+            (onClick)="onVisualizarJustificativa()"
+          />
+        </div>
+
+        <div class="action-group">
+          <p-button
+            label="Incluir"
+            icon="pi pi-plus"
+            [disabled]="loading()"
+            (onClick)="onIncluir()"
+          />
+
+          <p-button
+            label="Alterar"
+            icon="pi pi-pencil"
+            severity="secondary"
+            [outlined]="true"
+            [disabled]="!possuiUmSelecionado() || loading()"
+            (onClick)="onAlterar()"
+          />
+
+          <p-button
+            label="Excluir"
+            icon="pi pi-trash"
+            severity="danger"
+            [outlined]="true"
+            [disabled]="!possuiUmSelecionado() || loading()"
+            (onClick)="onExcluir()"
+          />
+
+          <p-button
+            label="Visualizar"
+            icon="pi pi-eye"
+            severity="secondary"
+            [outlined]="true"
+            [disabled]="!possuiUmSelecionado() || loading()"
+            (onClick)="onVisualizar()"
+          />
+        </div>
       </div>
 
       <app-lote-table
         [lotes]="lotes()"
-        [loading]="false"
+        [loading]="loading()"
         (selecaoAlterada)="onSelecaoAlterada($event)"
       />
     }
   </main>
+  <app-lancamento-dialog
+    [visible]="modalLancamentoVisivel()"
+    (visibleChange)="modalLancamentoVisivel.set($event)"
+  />
 </div>

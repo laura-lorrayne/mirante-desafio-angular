@@ -1,11 +1,14 @@
 .page-container {
   min-height: 100vh;
+
   padding: 1.5rem;
+
   background: var(--app-background);
 }
 
 .page-header {
   max-width: 1600px;
+
   margin: 0 auto 1.5rem;
 
   h1 {
@@ -20,6 +23,7 @@
 
 .page-content {
   max-width: 1600px;
+
   margin: 0 auto;
 
   display: flex;
@@ -49,9 +53,36 @@
   color: var(--app-text-secondary);
 }
 
-.loading-text {
-  display: inline-flex;
+.selection-summary {
+  font-weight: 600;
+
+  color: var(--app-primary-dark);
+}
+
+/* Barra de ações */
+
+.action-bar {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+
+  flex-wrap: wrap;
+
+  gap: 1rem;
+
+  padding: 0.75rem 1rem;
+
+  background: var(--app-surface);
+
+  border: 1px solid var(--app-border);
+  border-radius: 6px;
+}
+
+.action-group {
+  display: flex;
+  align-items: center;
+
+  flex-wrap: wrap;
 
   gap: 0.5rem;
 }
@@ -70,9 +101,22 @@
   border-radius: 6px;
 
   background: #ffebee;
+
   color: #b71c1c;
 
   font-size: 0.875rem;
+}
+
+@media (max-width: 900px) {
+  .action-bar {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .action-group {
+    width: 100%;
+  }
 }
 
 @media (max-width: 700px) {
@@ -82,6 +126,19 @@
 
   .result-summary {
     align-items: flex-start;
+
     flex-direction: column;
+  }
+
+  .action-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  :host ::ng-deep {
+    .action-group .p-button {
+      width: 100%;
+      justify-content: center;
+    }
   }
 }

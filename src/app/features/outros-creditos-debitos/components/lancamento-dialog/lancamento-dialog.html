@@ -1,1 +1,318 @@
-<p>lancamento-dialog works!</p>
+<p-dialog
+  header="Incluir Lançamento"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{
+    width: '950px',
+    maxWidth: '95vw',
+  }"
+>
+  <form [formGroup]="form" class="lancamento-form">
+    <!-- CONTA CORRENTE -->
+    <section class="form-section">
+      <div class="section-title">Conta Corrente</div>
+
+      <div class="form-grid">
+        <!-- CONTA CORRENTE -->
+        <div class="field conta-field">
+          <label for="contaCorrente"> Conta Corrente * </label>
+
+          <div class="search-field">
+            <input
+              id="contaCorrente"
+              type="text"
+              pInputText
+              formControlName="contaCorrente"
+              placeholder="Ex.: 10001-1"
+              (input)="onContaAlterada()"
+            />
+
+            <p-button
+              type="button"
+              icon="pi pi-search"
+              ariaLabel="Buscar conta corrente"
+              [loading]="loadingConta()"
+              [disabled]="modoFormulario() === 'visualizacao'"
+              (onClick)="buscarConta()"
+            />
+          </div>
+
+          @if (
+            form.controls.contaCorrente.touched && form.controls.contaCorrente.hasError('required')
+          ) {
+            <small class="error-message"> Informe a conta corrente. </small>
+          }
+
+          @if (contaNaoEncontrada()) {
+            <small class="error-message"> Conta corrente não encontrada. </small>
+          }
+        </div>
+
+        <!-- TITULAR -->
+        <div class="field titular-field">
+          <label for="titular"> Titular </label>
+
+          <input id="titular" type="text" pInputText formControlName="titular" />
+        </div>
+
+        <!-- VALOR -->
+        <div class="field">
+          <label for="valor"> Valor * </label>
+
+          <p-inputNumber
+            inputId="valor"
+            formControlName="valor"
+            mode="currency"
+            currency="BRL"
+            locale="pt-BR"
+            [minFractionDigits]="2"
+          />
+
+          @if (form.controls.valor.touched && form.controls.valor.hasError('required')) {
+            <small class="error-message"> Informe o valor. </small>
+          }
+
+          @if (form.controls.valor.touched && form.controls.valor.hasError('min')) {
+            <small class="error-message"> O valor deve ser maior que zero. </small>
+          }
+        </div>
+
+        <!-- HISTÓRICO -->
+        <div class="field">
+          <label for="historico"> Histórico * </label>
+
+          <p-select
+            inputId="historico"
+            formControlName="historico"
+            [options]="historicos"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecione"
+            appendTo="body"
+          />
+
+          @if (form.controls.historico.touched && form.controls.historico.hasError('required')) {
+            <small class="error-message"> Selecione o histórico. </small>
+          }
+        </div>
+
+        <!-- ESTORNO -->
+        <div class="field checkbox-field">
+          <label> Estorno </label>
+
+          <div class="checkbox-content">
+            <p-checkbox formControlName="estorno" [binary]="true" inputId="estorno" />
+
+            <label class="checkbox-label" for="estorno"> Lançamento de estorno </label>
+          </div>
+        </div>
+
+        <!-- DOCUMENTO -->
+        <div class="field">
+          <label for="documento"> Documento * </label>
+
+          <input id="documento" type="text" pInputText formControlName="documento" />
+
+          @if (form.controls.documento.touched && form.controls.documento.hasError('required')) {
+            <small class="error-message"> Informe o documento. </small>
+          }
+        </div>
+
+        <!-- DESCRIÇÃO -->
+        <div class="field descricao-field">
+          <label for="descricao"> Descrição </label>
+
+          <textarea id="descricao" pTextarea formControlName="descricao" rows="3"></textarea>
+        </div>
+
+        <!-- SITUAÇÃO -->
+        <div class="field">
+          <label for="situacao"> Situação </label>
+
+          <input id="situacao" type="text" pInputText formControlName="situacao" />
+        </div>
+      </div>
+    </section>
+
+    <!-- DOCUMENTO CSC -->
+    <section class="form-section">
+      <div class="section-title">Documento CSC</div>
+
+      <div class="csc-grid">
+        <!-- PA -->
+        <div class="field">
+          <label for="pa"> PA </label>
+
+          <p-select
+            inputId="pa"
+            formControlName="pa"
+            [options]="pas"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecione"
+            appendTo="body"
+          />
+        </div>
+      </div>
+    </section>
+  </form>
+
+  <!-- BOTÃO DE SALVAR -->
+  <div class="form-submit">
+    @if (modoFormulario() === 'novo') {
+      <p-button label="Salvar lançamento" icon="pi pi-check" (onClick)="salvar()" />
+    }
+
+    @if (modoFormulario() === 'edicao') {
+      <p-button
+        label="Salvar alterações"
+        icon="pi pi-check"
+        severity="success"
+        (onClick)="salvar()"
+      />
+    }
+
+    @if (modoFormulario() === 'visualizacao') {
+      <span class="view-mode-message">
+        <i class="pi pi-eye"></i>
+
+        Modo de visualização
+      </span>
+    }
+  </div>
+
+  <!-- BARRA DE AÇÕES DOS LANÇAMENTOS -->
+  <div class="lancamento-actions">
+    <p-button
+      label="Visualizar"
+      icon="pi pi-eye"
+      severity="secondary"
+      [outlined]="true"
+      [disabled]="!possuiLancamentoSelecionado()"
+      (onClick)="visualizarLancamento()"
+    />
+
+    <p-button label="Incluir" icon="pi pi-plus" (onClick)="prepararInclusao()" />
+
+    <p-button
+      label="Alterar"
+      icon="pi pi-pencil"
+      severity="secondary"
+      [outlined]="true"
+      [disabled]="!possuiLancamentoSelecionado()"
+      (onClick)="prepararAlteracao()"
+    />
+
+    <p-button
+      label="Excluir"
+      icon="pi pi-trash"
+      severity="danger"
+      [outlined]="true"
+      [disabled]="!possuiLancamentoSelecionado()"
+      (onClick)="excluirLancamento()"
+    />
+
+    <p-button
+      label="Duplicar"
+      icon="pi pi-copy"
+      severity="secondary"
+      [outlined]="true"
+      [disabled]="!possuiLancamentoSelecionado()"
+      (onClick)="duplicarLancamento()"
+    />
+  </div>
+
+  <!-- GRADE DE LANÇAMENTOS -->
+  <div class="lancamentos-table">
+    <p-table
+      [value]="lancamentos()"
+      dataKey="id"
+      selectionMode="single"
+      [selection]="lancamentoSelecionado()"
+      (selectionChange)="onLancamentoSelecionado($event)"
+      [tableStyle]="{
+        'min-width': '800px',
+      }"
+    >
+      <!-- CABEÇALHO -->
+      <ng-template #header>
+        <tr>
+          <th>ID</th>
+
+          <th>Conta Corrente</th>
+
+          <th>Titular</th>
+
+          <th>Valor</th>
+
+          <th>Histórico</th>
+
+          <th>Documento</th>
+
+          <th>Situação</th>
+        </tr>
+      </ng-template>
+
+      <!-- CORPO -->
+      <ng-template #body let-lancamento>
+        <tr [pSelectableRow]="lancamento" class="selectable-row">
+          <td>
+            {{ lancamento.id }}
+          </td>
+
+          <td>
+            {{ lancamento.contaCorrente }}
+          </td>
+
+          <td>
+            {{ lancamento.titular }}
+          </td>
+
+          <td>
+            {{ lancamento.valor | currency: 'BRL' : 'symbol' : '1.2-2' }}
+          </td>
+
+          <td>
+            {{ lancamento.historico }}
+          </td>
+
+          <td>
+            {{ lancamento.documento }}
+          </td>
+
+          <td>
+            <span class="status-pendente">
+              {{ lancamento.situacao }}
+            </span>
+          </td>
+        </tr>
+      </ng-template>
+
+      <!-- SEM REGISTROS -->
+      <ng-template #emptymessage>
+        <tr>
+          <td colspan="7" class="empty-message">
+            <i class="pi pi-info-circle"></i>
+
+            Nenhum lançamento incluído.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+
+  <!-- RODAPÉ DO MODAL -->
+  <ng-template #footer>
+    <p-button
+      label="Fechar"
+      icon="pi pi-times"
+      severity="secondary"
+      [outlined]="true"
+      (onClick)="fechar()"
+    />
+  </ng-template>
+</p-dialog>
