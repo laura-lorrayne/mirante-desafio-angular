@@ -1,1 +1,53 @@
-<p>consulta-lotes works!</p>
+<div class="page-container">
+  <header class="page-header">
+    <div>
+      <h1>Outros Créditos/Débitos</h1>
+
+      <p-breadcrumb [model]="breadcrumbItems" [home]="home" />
+    </div>
+  </header>
+
+  <main class="page-content">
+    <app-lote-filtros (pesquisar)="onPesquisar($event)" />
+
+    @if (erro()) {
+      <div class="error-container" role="alert">
+        <i class="pi pi-exclamation-circle"></i>
+
+        <span>
+          {{ erro() }}
+        </span>
+      </div>
+    }
+
+    @if (!erro() && pesquisou()) {
+      <div class="result-summary">
+        @if (loading()) {
+          <span class="loading-text">
+            <i class="pi pi-spin pi-spinner"></i>
+
+            Pesquisando lotes...
+          </span>
+        } @else {
+          <span>
+            {{ lotes().length }}
+            lote(s) encontrado(s).
+          </span>
+
+          @if (lotesSelecionados().length > 0) {
+            <span>
+              {{ lotesSelecionados().length }}
+              selecionado(s).
+            </span>
+          }
+        }
+      </div>
+
+      <app-lote-table
+        [lotes]="lotes()"
+        [loading]="false"
+        (selecaoAlterada)="onSelecaoAlterada($event)"
+      />
+    }
+  </main>
+</div>

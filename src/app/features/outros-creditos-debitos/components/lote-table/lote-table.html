@@ -1,1 +1,102 @@
-<p>lote-table works!</p>
+<div class="table-container">
+  <p-table
+    [value]="lotes()"
+    dataKey="id"
+    [loading]="loading()"
+    [selection]="selecionados()"
+    (selectionChange)="onSelectionChange($event)"
+    [paginator]="true"
+    [rows]="5"
+    [rowsPerPageOptions]="[5, 10, 20]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Exibindo {first} a {last} de {totalRecords} registros"
+    [showFirstLastIcon]="true"
+    [tableStyle]="{
+      'min-width': '1100px',
+    }"
+  >
+    <!-- CABEÇALHO -->
+    <ng-template #header>
+      <tr>
+        <th class="selection-column">
+          <p-tableHeaderCheckbox />
+        </th>
+
+        <th>ID Lote</th>
+
+        <th>Data Entrada</th>
+
+        <th class="numeric-column">Valor</th>
+
+        <th class="numeric-column">Quant. Lançamentos</th>
+
+        <th>Usuário Registro</th>
+
+        <th>Usuário Aprovação</th>
+
+        <th>Situação Lote</th>
+
+        <th>Data/Hora Situação Lote</th>
+      </tr>
+    </ng-template>
+
+    <!-- CORPO -->
+    <ng-template #body let-lote>
+      <tr>
+        <td class="selection-column">
+          <p-tableCheckbox [value]="lote" />
+        </td>
+
+        <td>
+          {{ lote.id }}
+        </td>
+
+        <td>
+          {{ lote.dataEntrada | date: 'dd/MM/yyyy' }}
+        </td>
+
+        <td class="numeric-column">
+          {{ lote.valor | currency: 'BRL' : 'symbol' : '1.2-2' }}
+        </td>
+
+        <td class="numeric-column">
+          {{ lote.quantidadeLancamentos }}
+        </td>
+
+        <td>
+          {{ lote.usuarioRegistro }}
+        </td>
+
+        <td>
+          {{ lote.usuarioAprovacao || '-' }}
+        </td>
+
+        <td>
+          <span
+            class="status"
+            [class.status-aberto]="lote.situacao === 'Aberto'"
+            [class.status-enviado]="lote.situacao === 'Enviado'"
+            [class.status-confirmado]="lote.situacao === 'Confirmado'"
+          >
+            {{ lote.situacao }}
+          </span>
+        </td>
+
+        <td>
+          {{ lote.dataHoraSituacao | date: 'dd/MM/yyyy HH:mm' }}
+        </td>
+      </tr>
+    </ng-template>
+
+    <!-- SEM RESULTADOS -->
+    <ng-template #emptymessage>
+      <tr>
+        <td colspan="9" class="empty-message">
+          <i class="pi pi-search"></i>
+
+          Nenhum lote encontrado.
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

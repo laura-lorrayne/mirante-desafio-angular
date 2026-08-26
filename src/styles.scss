@@ -1,5 +1,15 @@
 @import 'primeicons/primeicons.css';
 
+:root {
+  --app-primary: #006b66;
+  --app-primary-dark: #004f4b;
+  --app-background: #f5f6f7;
+  --app-surface: #ffffff;
+  --app-border: #d9dee2;
+  --app-text: #263238;
+  --app-text-secondary: #66747d;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -12,6 +22,6 @@ body {
 
 body {
   font-family: Arial, Helvetica, sans-serif;
-  background: #f5f6f7;
-  color: #263238;
+  background: var(--app-background);
+  color: var(--app-text);
 }

@@ -1,1 +1,164 @@
-<p>lote-filtros works!</p>
+<p-panel header="Filtros" [toggleable]="true">
+  <form [formGroup]="form" (ngSubmit)="onPesquisar()" class="filter-form">
+    <div class="form-grid">
+      <div class="field">
+        <label for="instituicaoResponsavel"> Instituição Resp. </label>
+
+        <input
+          id="instituicaoResponsavel"
+          type="text"
+          pInputText
+          formControlName="instituicaoResponsavel"
+          placeholder="Informe a instituição responsável"
+        />
+      </div>
+
+      <div class="field">
+        <label for="instituicao"> Instituição </label>
+
+        <input
+          id="instituicao"
+          type="text"
+          pInputText
+          formControlName="instituicao"
+          placeholder="Informe a instituição"
+        />
+      </div>
+
+      <div class="field">
+        <label for="situacao"> Situação Lote </label>
+
+        <p-select
+          inputId="situacao"
+          formControlName="situacao"
+          [options]="situacoes"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Todas"
+          appendTo="body"
+        />
+      </div>
+    </div>
+
+    <div class="range-row">
+      <div class="range-group">
+        <span class="range-title"> ID Lote </span>
+
+        <div class="range-fields">
+          <div class="field">
+            <label for="idLoteDe"> De </label>
+
+            <p-inputNumber
+              inputId="idLoteDe"
+              formControlName="idLoteDe"
+              [useGrouping]="false"
+              [min]="0"
+            />
+          </div>
+
+          <div class="field">
+            <label for="idLoteAte"> Até </label>
+
+            <p-inputNumber
+              inputId="idLoteAte"
+              formControlName="idLoteAte"
+              [useGrouping]="false"
+              [min]="0"
+            />
+          </div>
+        </div>
+
+        @if (
+          form.hasError('idLoteRange') &&
+          (form.controls.idLoteDe.touched || form.controls.idLoteAte.touched)
+        ) {
+          <small class="error-message"> O ID inicial não pode ser maior que o ID final. </small>
+        }
+      </div>
+
+      <div class="range-group">
+        <span class="range-title"> Valor Lote </span>
+
+        <div class="range-fields">
+          <div class="field">
+            <label for="valorDe"> De </label>
+
+            <p-inputNumber
+              inputId="valorDe"
+              formControlName="valorDe"
+              mode="currency"
+              currency="BRL"
+              locale="pt-BR"
+              [min]="0"
+            />
+          </div>
+
+          <div class="field">
+            <label for="valorAte"> Até </label>
+
+            <p-inputNumber
+              inputId="valorAte"
+              formControlName="valorAte"
+              mode="currency"
+              currency="BRL"
+              locale="pt-BR"
+              [min]="0"
+            />
+          </div>
+        </div>
+
+        @if (
+          form.hasError('valorRange') &&
+          (form.controls.valorDe.touched || form.controls.valorAte.touched)
+        ) {
+          <small class="error-message">
+            O valor inicial não pode ser maior que o valor final.
+          </small>
+        }
+      </div>
+
+      <div class="range-group">
+        <span class="range-title"> Data Entrada </span>
+
+        <div class="range-fields">
+          <div class="field">
+            <label for="dataEntradaDe"> De </label>
+
+            <p-datepicker
+              inputId="dataEntradaDe"
+              formControlName="dataEntradaDe"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showButtonBar]="true"
+              appendTo="body"
+            />
+          </div>
+
+          <div class="field">
+            <label for="dataEntradaAte"> Até </label>
+
+            <p-datepicker
+              inputId="dataEntradaAte"
+              formControlName="dataEntradaAte"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showButtonBar]="true"
+              appendTo="body"
+            />
+          </div>
+        </div>
+
+        @if (
+          form.hasError('dataRange') &&
+          (form.controls.dataEntradaDe.touched || form.controls.dataEntradaAte.touched)
+        ) {
+          <small class="error-message"> A data inicial não pode ser posterior à data final. </small>
+        }
+      </div>
+    </div>
+
+    <div class="actions">
+      <p-button type="submit" label="Pesquisar" icon="pi pi-search" />
+    </div>
+  </form>
+</p-panel>
