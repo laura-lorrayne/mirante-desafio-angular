@@ -26,6 +26,8 @@ import { LoteTable } from '../../components/lote-table/lote-table';
 
 import { LancamentoDialog } from '../../components/lancamento-dialog/lancamento-dialog';
 
+import { LoteDialog, ModoLoteDialog } from '../../components/lote-dialog/lote-dialog';
+
 @Component({
   selector: 'app-consulta-lotes',
 
@@ -37,6 +39,7 @@ import { LancamentoDialog } from '../../components/lancamento-dialog/lancamento-
     LoteFiltros,
     LoteTable,
     LancamentoDialog,
+    LoteDialog,
   ],
 
   providers: [MessageService, ConfirmationService],
@@ -65,13 +68,18 @@ export class ConsultaLotes {
 
   readonly modalLancamentoVisivel = signal(false);
 
+  readonly loteDialogVisivel = signal(false);
+
+  readonly loteDialogModo = signal<ModoLoteDialog>('visualizar');
+
+  readonly loteDialogSelecionado = signal<Lote | null>(null);
+
   readonly possuiSelecionados = computed(() => this.lotesSelecionados().length > 0);
 
   readonly possuiUmSelecionado = computed(() => this.lotesSelecionados().length === 1);
 
   readonly home: MenuItem = {
     icon: 'pi pi-home',
-    label: 'Início',
   };
 
   readonly breadcrumbItems: MenuItem[] = [
@@ -234,11 +242,66 @@ export class ConsultaLotes {
       return;
     }
 
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Alterar lote',
-      detail: `Lote ${lote.id} selecionado para alteração.`,
-    });
+    this.loteDialogSelecionado.set(lote);
+
+    this.loteDialogModo.set('alterar');
+
+    this.loteDialogVisivel.set(true);
+  }
+
+  onVisualizar(): void {
+    const lote = this.lotesSelecionados()[0];
+
+    if (!lote) {
+      return;
+    }
+
+    this.loteDialogSelecionado.set(lote);
+
+    this.loteDialogModo.set('visualizar');
+
+    this.loteDialogVisivel.set(true);
+  }
+
+  onSalvarLoteAlterado(loteAtualizado: Lote): void {
+    this.loading.set(true);
+
+    this.loteService
+      .atualizar(loteAtualizado)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+
+        finalize(() => {
+          this.loading.set(false);
+        }),
+      )
+      .subscribe({
+        next: (atualizado) => {
+          this.lotes.update((lotes) =>
+            lotes.map((lote) => (lote.id === atualizado.id ? atualizado : lote)),
+          );
+
+          this.lotesSelecionados.set([atualizado]);
+
+          this.loteDialogSelecionado.set(atualizado);
+
+          this.loteDialogVisivel.set(false);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Lote alterado',
+            detail: `O lote ${atualizado.id} foi alterado com sucesso.`,
+          });
+        },
+
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Erro',
+            detail: `Não foi possível alterar o lote ${loteAtualizado.id}.`,
+          });
+        },
+      });
   }
 
   onExcluir(): void {
@@ -293,21 +356,6 @@ export class ConsultaLotes {
             },
           });
       },
-    });
-  }
-
-  onVisualizar(): void {
-    const lote = this.lotesSelecionados()[0];
-
-    if (!lote) {
-      return;
-    }
-
-    this.messageService.add({
-      severity: 'info',
-      summary: `Lote ${lote.id}`,
-
-      detail: `${lote.instituicao} — ${lote.situacao}`,
     });
   }
 

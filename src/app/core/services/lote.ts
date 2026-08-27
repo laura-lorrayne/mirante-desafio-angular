@@ -44,6 +44,24 @@ export class LoteService {
     return of(undefined).pipe(delay(100));
   }
 
+  atualizar(loteAtualizado: Lote): Observable<Lote> {
+    this.lotes = this.lotes.map((lote) =>
+      lote.id === loteAtualizado.id
+        ? {
+            ...loteAtualizado,
+          }
+        : lote,
+    );
+
+    const atualizado = this.lotes.find((lote) => lote.id === loteAtualizado.id);
+
+    if (!atualizado) {
+      throw new Error(`Lote ${loteAtualizado.id} não encontrado.`);
+    }
+
+    return of(atualizado).pipe(delay(100));
+  }
+
   private atendeFiltros(lote: Lote, filtro: LoteFiltro): boolean {
     if (
       filtro.instituicaoResponsavel &&

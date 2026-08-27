@@ -120,4 +120,13 @@
     [visible]="modalLancamentoVisivel()"
     (visibleChange)="modalLancamentoVisivel.set($event)"
   />
+
+  <!-- MODAL VISUALIZAR / ALTERAR LOTE -->
+  <app-lote-dialog
+    [visible]="loteDialogVisivel()"
+    [lote]="loteDialogSelecionado()"
+    [modo]="loteDialogModo()"
+    (visibleChange)="loteDialogVisivel.set($event)"
+    (salvar)="onSalvarLoteAlterado($event)"
+  />
 </div>

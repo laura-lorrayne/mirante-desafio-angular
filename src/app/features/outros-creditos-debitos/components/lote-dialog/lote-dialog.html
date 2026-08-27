@@ -1,0 +1,163 @@
+<p-dialog
+  [header]="titulo"
+  [visible]="visible()"
+  (visibleChange)="onVisibleChange($event)"
+  [modal]="true"
+  [closable]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{
+    width: '760px',
+    maxWidth: '95vw',
+  }"
+>
+  <form [formGroup]="form" class="lote-form">
+    <section class="form-section">
+      <div class="section-title">Dados do Lote</div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="id"> ID do Lote </label>
+
+          <p-inputNumber inputId="id" formControlName="id" [useGrouping]="false" />
+        </div>
+
+        <div class="field">
+          <label for="situacao"> Situação * </label>
+
+          <p-select
+            inputId="situacao"
+            formControlName="situacao"
+            [options]="situacoes"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecione"
+            appendTo="body"
+          />
+
+          @if (form.controls.situacao.touched && form.controls.situacao.hasError('required')) {
+            <small class="error-message"> Informe a situação. </small>
+          }
+        </div>
+
+        <div class="field full-width">
+          <label for="instituicaoResponsavel"> Instituição Responsável * </label>
+
+          <input
+            id="instituicaoResponsavel"
+            type="text"
+            pInputText
+            formControlName="instituicaoResponsavel"
+          />
+
+          @if (
+            form.controls.instituicaoResponsavel.touched &&
+            form.controls.instituicaoResponsavel.hasError('required')
+          ) {
+            <small class="error-message"> Informe a instituição responsável. </small>
+          }
+        </div>
+
+        <div class="field full-width">
+          <label for="instituicao"> Instituição * </label>
+
+          <input id="instituicao" type="text" pInputText formControlName="instituicao" />
+
+          @if (
+            form.controls.instituicao.touched && form.controls.instituicao.hasError('required')
+          ) {
+            <small class="error-message"> Informe a instituição. </small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="valor"> Valor * </label>
+
+          <p-inputNumber
+            inputId="valor"
+            formControlName="valor"
+            mode="currency"
+            currency="BRL"
+            locale="pt-BR"
+            [minFractionDigits]="2"
+          />
+
+          @if (form.controls.valor.touched && form.controls.valor.hasError('required')) {
+            <small class="error-message"> Informe o valor. </small>
+          }
+
+          @if (form.controls.valor.touched && form.controls.valor.hasError('min')) {
+            <small class="error-message"> O valor deve ser maior que zero. </small>
+          }
+        </div>
+
+        <div class="field">
+          <label for="quantidadeLancamentos"> Quantidade de Lançamentos * </label>
+
+          <p-inputNumber
+            inputId="quantidadeLancamentos"
+            formControlName="quantidadeLancamentos"
+            [useGrouping]="false"
+            [min]="0"
+          />
+
+          @if (
+            form.controls.quantidadeLancamentos.touched &&
+            form.controls.quantidadeLancamentos.hasError('required')
+          ) {
+            <small class="error-message"> Informe a quantidade de lançamentos. </small>
+          }
+
+          @if (
+            form.controls.quantidadeLancamentos.touched &&
+            form.controls.quantidadeLancamentos.hasError('min')
+          ) {
+            <small class="error-message"> A quantidade não pode ser negativa. </small>
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="section-title">Informações de Registro</div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label for="usuarioRegistro"> Usuário Registro </label>
+
+          <input id="usuarioRegistro" type="text" pInputText formControlName="usuarioRegistro" />
+        </div>
+
+        <div class="field">
+          <label for="usuarioAprovacao"> Usuário Aprovação </label>
+
+          <input id="usuarioAprovacao" type="text" pInputText formControlName="usuarioAprovacao" />
+        </div>
+      </div>
+    </section>
+  </form>
+
+  @if (modo() === 'visualizar') {
+    <div class="view-mode-message">
+      <i class="pi pi-eye"></i>
+
+      <span> Visualização somente leitura </span>
+    </div>
+  }
+
+  <ng-template #footer>
+    <div class="dialog-footer">
+      <p-button
+        label="Fechar"
+        icon="pi pi-times"
+        severity="secondary"
+        [outlined]="true"
+        (onClick)="fechar()"
+      />
+
+      @if (modo() === 'alterar') {
+        <p-button label="Salvar alterações" icon="pi pi-check" (onClick)="onSalvar()" />
+      }
+    </div>
+  </ng-template>
+</p-dialog>
